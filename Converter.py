@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 import os.path
 
 
-def preview(file):
+def preview(file):  # Provides cover page preview for the right UI pane
     doc = fitz.open(file)
     page = doc.load_page(0)
     pix = page.get_pixmap(dpi=55)
@@ -27,7 +27,6 @@ def convert_to_jpeg(file):
 
 # --------------------------------- Layout ---------------------------------
 
-
 left_col = [[sg.Text('Folder'), sg.In(size=(25, 1), enable_events=True, key='-FOLDER-'), sg.FolderBrowse()],
             [sg.Listbox(values=[], enable_events=True, size=(40, 20), key='-FILE LIST-')],
             [sg.Button("Convert", enable_events=True, key='-CONVERT-')]]
@@ -40,20 +39,22 @@ images_col = [[sg.Text('You choose from the list:')],
 layout = [
     [sg.Column(left_col, element_justification='c'), sg.VSeperator(), sg.Column(images_col, element_justification='c')]]
 
-# --------------------------------- Create Window ---------------------------------
+# --------------------------------- Window ---------------------------------
+
 window = sg.Window('PDF to JPEG Converter', layout, resizable=True)
 
 # --------------------------------- Event Loop ---------------------------------
+
 while True:
     event, values = window.read()
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
-    if event == '-FOLDER-':  # Folder name was filled in, make a list of files in the folder
+    if event == '-FOLDER-':
         folder = values['-FOLDER-']
         try:
-            file_list = os.listdir(folder)  # get list of files in folder
+            file_list = os.listdir(folder)
         except:
             file_list = []
         fnames = [f for f in file_list if os.path.isfile(
@@ -71,7 +72,7 @@ while True:
         try:
             convert_to_jpeg(filename)
         except:
-            sg.popup_notify("Please select a file first")
+            sg.popup_notify(
+                "Please select a file first")  # in case the user did not select anything and pressed convert
 
 window.close()
-
